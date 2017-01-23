@@ -1588,6 +1588,7 @@ void NuPlayer::restartAudio(
     mRenderer->flush(true /* audio */, false /* notifyComplete */);
     if (mVideoDecoder != NULL) {
         mRenderer->flush(false /* audio */, false /* notifyComplete */);
+        flushDecoder(false /* audio */, false /*needShutdown*/);
     }
 
     performSeek(currentPositionUs);
@@ -1598,6 +1599,10 @@ void NuPlayer::restartAudio(
     }
     if (needsToCreateAudioDecoder) {
         instantiateDecoder(true /* audio */, &mAudioDecoder, !forceNonOffload);
+    }
+    if (mVideoDecoder != NULL) {
+        // After a flush without shutdown, decoder is paused.
+        mVideoDecoder->signalResume(false /* needNotify */);
     }
 }
 
